@@ -61,7 +61,7 @@ export class NodesEditor extends HTMLElement {
         };
 
         this.addEventListener("keydown", event => {
-            if (event.code == "Delete") {
+            if (event.code == "Delete" && this.allowDelete) {
                 this.selectedNodes.forEach(node => {
                     this.#preset.removeNode(node);
                 });
