@@ -15,6 +15,7 @@ export class NodesEditor extends HTMLElement {
     selectedNodes: Node[] = [];
 
     allowDelete = true;
+    nodeCurving = 0.8;
     
     #preset: NodesPreset;
     onNodeAdd: (n: Node) => any;
@@ -164,12 +165,15 @@ export class NodesEditor extends HTMLElement {
                     const cRectTo = to.element.connectorHandle.getBoundingClientRect();
                     const cRectToX = cRectTo.x - parentBox.x;
                     const cRectToY = cRectTo.y - parentBox.y + cRectTo.height / 2;
+                    const cX = (cRectToX - cRectFromX) * this.nodeCurving;
+                    const cY = (cRectToY - cRectFromY) * this.nodeCurving / 12;
 
                     ctx.beginPath();
                     ctx.moveTo(cRectFromX, cRectFromY);
-                    ctx.lineTo(cRectToX, cRectToY);
-                    ctx.closePath();
+                    //ctx.lineTo(cRectToX, cRectToY);
+                    ctx.bezierCurveTo(cRectFromX + cX, cRectFromY + cY, cRectToX - cX, cRectToY - cY, cRectToX, cRectToY);
                     ctx.stroke();
+                    ctx.closePath();
                 });
             });
         });
