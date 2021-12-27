@@ -7,7 +7,7 @@ Have you ever wanted to make procedural textures system or simply making audio? 
 ![Nodes Network Editor](./docs/images/nodes_network_0.png)
 
 ## Features (sort of...)
-- No dependencies required!
+- No dependencies!
 - Includes Web Component editor (``<nodes-editor>`` tag)
 - Ability to export to and import from external object (JSON for example)
 
