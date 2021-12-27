@@ -1,0 +1,14 @@
+{
+  "name": "@nahkd123/nodes",
+  "version": "0.0.1",
+  "description": "Nodes programming",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "node dist/test.js"
+  },
+  "keywords": [
+    "nodes"
+  ],
+  "author": "nahkd123",
+  "license": "GPL-3.0-or-later"
+}
