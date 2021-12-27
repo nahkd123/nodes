@@ -3,6 +3,12 @@
   "version": "0.0.1",
   "description": "Nodes programming",
   "main": "dist/index.js",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.ts",
+    "readme.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "node dist/test.js"
   },
