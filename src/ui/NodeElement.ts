@@ -51,12 +51,26 @@ export class NodeElement extends HTMLElement {
         this.wrapper.append(this.header, this.content, this.postContent);
 
         this.header.addEventListener("mousedown", event => {
+            if (this.editor) {
+                this.editor.selectedNodes = [node];
+                this.editor.paintCanvas();
+            }
+
             let mouseMove = (event: MouseEvent) => {
-                node.editorPosition[0] += event.movementX;
-                node.editorPosition[1] += event.movementY;
-                this.style.left = `${node.editorPosition[0]}px`;
-                this.style.top = `${node.editorPosition[1]}px`;
-                this.editor?.paintCanvas();
+                if (this.editor) {
+                    this.editor.selectedNodes.forEach(node => {
+                        node.editorPosition[0] += event.movementX;
+                        node.editorPosition[1] += event.movementY;
+                        node.element.style.left = `${node.editorPosition[0]}px`;
+                        node.element.style.top = `${node.editorPosition[1]}px`;
+                    });
+                    this.editor.paintCanvas();
+                } else {
+                    node.editorPosition[0] += event.movementX;
+                    node.editorPosition[1] += event.movementY;
+                    this.style.left = `${node.editorPosition[0]}px`;
+                    this.style.top = `${node.editorPosition[1]}px`;
+                }
             };
             let mouseUp = (event: MouseEvent) => {
                 document.removeEventListener("mousemove", mouseMove);

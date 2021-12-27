@@ -12,6 +12,9 @@ export class NodesEditor extends HTMLElement {
     draggingConnector: Connector;
     draggingConnectorTo: Connector;
     draggingPos: number[] = [0, 0];
+    selectedNodes: Node[] = [];
+
+    allowDelete = true;
     
     #preset: NodesPreset;
     onNodeAdd: (n: Node) => any;
@@ -34,6 +37,7 @@ export class NodesEditor extends HTMLElement {
         this.#preset.nodeRemoved.listen(this.onNodeRemove);
         this.#preset.networkChanged.listen(this.onNetworkChange);
         this.paintCanvas();
+        this.tabIndex = 1;
     }
     
     constructor() {
@@ -55,6 +59,16 @@ export class NodesEditor extends HTMLElement {
         this.onNetworkChange = () => {
             this.paintCanvas();
         };
+
+        this.addEventListener("keydown", event => {
+            if (event.code == "Delete") {
+                this.selectedNodes.forEach(node => {
+                    this.#preset.removeNode(node);
+                });
+                this.selectedNodes = [];
+                this.paintCanvas();
+            }
+        });
     }
 
     #reset() {
@@ -85,8 +99,10 @@ export class NodesEditor extends HTMLElement {
         this.ctx = this.canvas.getContext("2d");
         this.root.append(style, this.canvas);
 
+        let moved = false;
         this.canvas.addEventListener("mousedown", event => {
             let mouseMove = (event: MouseEvent) => {
+                moved = true;
                 this.#preset.nodes.forEach(node => {
                     node.editorPosition[0] += event.movementX;
                     node.editorPosition[1] += event.movementY;
@@ -96,6 +112,12 @@ export class NodesEditor extends HTMLElement {
                 this.paintCanvas();
             };
             let mouseUp = (event: MouseEvent) => {
+                if (!moved) {
+                    this.selectedNodes = [];
+                    this.paintCanvas();
+                }
+
+                moved = false;
                 document.removeEventListener("mousemove", mouseMove);
                 document.removeEventListener("mouseup", mouseUp);
             };
@@ -113,6 +135,8 @@ export class NodesEditor extends HTMLElement {
     paintCanvas() {
         const ctx = this.ctx, dpr = devicePixelRatio;
         const cw = this.canvas.offsetWidth * dpr, ch = this.canvas.offsetHeight * dpr;
+        const parentBox = this.getBoundingClientRect();
+        
         if (this.canvas.width != cw || this.canvas.height != ch) {
             this.canvas.width = cw;
             this.canvas.height = ch;
@@ -128,7 +152,6 @@ export class NodesEditor extends HTMLElement {
         ctx.lineWidth = 2;
         ctx.lineCap = "round";
 
-        const parentBox = this.getBoundingClientRect();
         this.#preset.nodes.forEach(node => {
             node.outputs.forEach(output => {
                 if (!output.element) return;
@@ -151,8 +174,31 @@ export class NodesEditor extends HTMLElement {
             });
         });
 
+        ctx.strokeStyle = "#ffac00";
+        ctx.lineWidth = 4;
+        this.selectedNodes.forEach(node => {
+            if (!node.element) return;
+            const nodeEBox = node.element.getBoundingClientRect();
+            const pad = 8;
+            const
+                x1 = nodeEBox.x - parentBox.x - pad,
+                y1 = nodeEBox.y - parentBox.y - pad,
+                x2 = x1 + nodeEBox.width + pad * 2,
+                y2 = y1 + nodeEBox.height + pad * 2;
+            
+            ctx.beginPath();
+            ctx.moveTo(x1, y1 + pad);
+            ctx.arc(x1 + pad, y1 + pad, pad, (Math.PI / 2) * 2, (Math.PI / 2) * 3);
+            ctx.arc(x2 - pad, y1 + pad, pad, (Math.PI / 2) * 3, (Math.PI / 2) * 4);
+            ctx.arc(x2 - pad, y2 - pad, pad, (Math.PI / 2) * 4, (Math.PI / 2) * 5);
+            ctx.arc(x1 + pad, y2 - pad, pad, (Math.PI / 2) * 5, (Math.PI / 2) * 6);
+            ctx.closePath();
+            ctx.stroke();
+        });
+
         if (this.draggingConnector) {
             ctx.strokeStyle = "#7f7f7f";
+            ctx.lineWidth = 2;
             const cRectFrom = this.draggingConnector.element.connectorHandle.getBoundingClientRect();
             const cRectFromX = cRectFrom.x - parentBox.x + cRectFrom.width;
             const cRectFromY = cRectFrom.y - parentBox.y + cRectFrom.height / 2;

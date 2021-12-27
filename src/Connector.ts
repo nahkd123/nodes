@@ -60,8 +60,9 @@ export abstract class Connector {
      * this connector.
      */
     disconnectAll() {
-        this.connectedTo.forEach(n => this.disconnect(n));
-        this.connectedFrom.forEach(n => n.disconnect(this));
+        // Concurrent modification thing
+        [...this.connectedTo].forEach(n => this.disconnect(n));
+        [...this.connectedFrom].forEach(n => n.disconnect(this));
     }
 
 }

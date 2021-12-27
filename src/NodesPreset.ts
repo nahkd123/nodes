@@ -25,6 +25,7 @@ export class NodesPreset {
         this.nodes.splice(idx, 1);
         node.inputs.forEach(inp => inp.disconnectAll());
         node.outputs.forEach(out => out.disconnectAll());
+        console.log(node);
         this.nodeRemoved.emit(node);
         this.networkChanged.emit();
     }
