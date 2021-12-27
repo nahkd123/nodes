@@ -9,6 +9,13 @@
   "keywords": [
     "nodes"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/nahkd123/nodes.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nahkd123/nodes/issues"
+  },
   "author": "nahkd123",
   "license": "GPL-3.0-or-later"
 }
